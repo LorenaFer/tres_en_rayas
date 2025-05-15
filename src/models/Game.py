@@ -13,31 +13,28 @@ class Game:
         self.lock = threading.Lock()  # Lock para sincronización
         
     def create_table(self):
-        #Crea una nueva sala si hay menos de 10 salas disponibles
+        # Crea una nueva sala si hay menos de 10 salas disponibles
         with self.lock:
             try:
-                # Contar solo las salas que están esperando jugadores
                 waiting_tables = [table for table in self.tables if len(table.players) < 2]
-                print(f"Salas en espera: {len(waiting_tables)}")  
-                print(f"Total de salas: {len(self.tables)}")  
-                
-                # Permitir crear una nueva sala si hay menos de 20 en espera
                 if len(waiting_tables) < 20:
                     table = Table(self.table_id)
                     self.tables.append(table)
                     self.table_id += 1
-                    print(f"Nueva sala creada con ID: {table.id}") 
+                    table.start_thread()  # Inicia el hilo de la sala
                     return table
-                print("No se puede crear más salas - límite alcanzado")  
                 return None
             except Exception as e:
                 print(f"Error al crear sala: {str(e)}")
                 return None
 
     def remove_table(self, table_id):
-        #Elimina una sala del juego
+        # Elimina una sala del juego
         with self.lock:
-            self.tables = [table for table in self.tables if table.id != table_id]
+            table = next((t for t in self.tables if t.id == table_id), None)
+            if table:
+                table.stop_thread()  # Detiene el hilo de la sala
+                self.tables = [t for t in self.tables if t.id != table_id]
 
     def get_tables_info(self):
         #Obtiene información de todas las salas disponibles, excluyendo las finalizadas
@@ -73,4 +70,4 @@ class Game:
     def remove_finished_tables(self):
         """Elimina todas las salas que ya han finalizado."""
         with self.lock:
-            self.tables = [table for table in self.tables if table.winner is None] 
+            self.tables = [table for table in self.tables if table.winner is None]

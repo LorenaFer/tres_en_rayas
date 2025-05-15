@@ -49,11 +49,10 @@ class GameServer:
             print(f"Error al decodificar mensaje: {message}")
 
     async def handle_create_table(self, websocket):
-        #Maneja la creación de una nueva sala
+        # Maneja la creación de una nueva sala
         table = self.game.create_table()
         if table:
             await self.handle_join_table(websocket, table.id)
-            # Notificar a todos los clientes sobre la nueva sala
             await self.broadcast_tables_update()
         else:
             await websocket.send(json.dumps({
@@ -137,20 +136,17 @@ class GameServer:
             }))
 
     async def handle_disconnect(self, websocket):
-        #Maneja la desconexión de un cliente
+        # Maneja la desconexión de un cliente
         if websocket in self.clients:
             client_info = self.clients[websocket]
             table_id = client_info['table_id']
-            
             if table_id:
                 table = self.game.get_table(table_id)
                 if table:
                     table.remove_player(client_info['player_id'])
                     await self.broadcast_table_state(table)
-                    
                     if len(table.players) == 0:
-                        self.game.remove_table(table_id)
-            
+                        self.game.remove_table(table_id)  # Detiene el hilo de la sala
             del self.clients[websocket]
 
     async def broadcast_table_state(self, table):
@@ -208,4 +204,4 @@ class GameServer:
 
 if __name__ == '__main__':
     server = GameServer()
-    asyncio.run(server.start()) 
+    asyncio.run(server.start())

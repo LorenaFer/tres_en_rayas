@@ -4,6 +4,7 @@ Modelo que representa una sala de juego individual.
 
 import threading
 import json
+import time  # Para simular la ejecución continua del hilo
 
 class Table:
     def __init__(self, _id):
@@ -15,6 +16,28 @@ class Table:
         self.winner = None
         self.turn = 'X'
         self.lock = threading.Lock()  # Lock para sincronización
+        self.running = False  # Indica si el hilo de la sala está activo
+        self.thread = None  # Hilo de la sala
+
+    def start_thread(self):
+        """Inicia el hilo de la sala."""
+        self.running = True
+        self.thread = threading.Thread(target=self.run)
+        self.thread.start()
+
+    def stop_thread(self):
+        """Detiene el hilo de la sala."""
+        self.running = False
+        if self.thread:
+            self.thread.join()
+
+    def run(self):
+        """Lógica que se ejecuta en el hilo de la sala."""
+        while self.running:
+            with self.lock:
+                if self.winner:
+                    self.running = False  # Detener el hilo si el juego ha terminado
+            time.sleep(1)  # Simula un ciclo de ejecución
     
     def add_player(self, player_id, websocket):
         #Añade un jugador a la sala y almacena su WebSocket
