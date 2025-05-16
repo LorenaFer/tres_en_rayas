@@ -49,8 +49,6 @@ tres_en_raya/
 │   ├── models/
 │   │   ├── Game.py
 │   │   └── Table.py
-│   ├── templates/
-│   │   └── index.html
 │   ├── server.py
 │   └── client.py
 ├── requirements.txt
