@@ -239,12 +239,12 @@ class GameClient:
         asyncio.run_coroutine_threadsafe(connect(), self.loop)
     
     def run_async_loop(self):
-        """Ejecuta el bucle de eventos de asyncio."""
+        #Ejecuta el bucle de eventos de asyncio
         asyncio.set_event_loop(self.loop)
         self.loop.run_forever()
     
     def process_messages(self):
-        """Procesa los mensajes de la cola."""
+        #Procesa los mensajes de la cola
         try:
             while True:
                 msg_type, msg_data = self.message_queue.get_nowait()
@@ -264,16 +264,16 @@ class GameClient:
             self.root.after(100, self.process_messages)
     
     async def refresh_tables_async(self):
-        """Actualiza la lista de salas desde el servidor."""
+        #Actualiza la lista de salas desde el servidor
         if self.websocket:
             await self.websocket.send(json.dumps({'command': 'GET_TABLES'}))
     
     def refresh_tables(self):
-        """Actualiza la lista de salas."""
+        #Actualiza la lista de salas
         asyncio.run_coroutine_threadsafe(self.refresh_tables_async(), self.loop)
     
     def create_table(self):
-        """Crea una nueva sala."""
+        #Crea una nueva sala
         if self.websocket:
             asyncio.run_coroutine_threadsafe(
                 self.websocket.send(json.dumps({'command': 'CREATE_TABLE'})),
@@ -281,7 +281,7 @@ class GameClient:
             )
     
     def join_table(self, table_id):
-        """Une al jugador a una sala seleccionada."""
+        #Une al jugador a una sala seleccionada
         if self.websocket:
             asyncio.run_coroutine_threadsafe(
                 self.websocket.send(json.dumps({
@@ -292,7 +292,7 @@ class GameClient:
             )
     
     def make_move(self, position):
-        """Realiza un movimiento en el tablero."""
+        #Realiza un movimiento en el tablero
         if self.websocket and self.current_table:
             asyncio.run_coroutine_threadsafe(
                 self.websocket.send(json.dumps({
@@ -304,7 +304,7 @@ class GameClient:
             )
     
     def update_tables_list(self, tables):
-        """Actualiza la lista de salas en la interfaz."""
+        #Actualiza la lista de salas en la interfaz
         for item in self.tables_tree.get_children():
             self.tables_tree.delete(item)
         
@@ -316,7 +316,7 @@ class GameClient:
             ))
     
     def update_game_state(self, state):
-        """Actualiza el estado del juego en la interfaz"""
+        #Actualiza el estado del juego en la interfaz
         try:
             self.current_table = state['id']
             self.table_info_label.config(text=f"Sala {state['id']} - Turno: {state['turn']}")
@@ -402,7 +402,7 @@ class GameClient:
 
 
     def run(self):
-        """Inicia la aplicación."""
+        #Inicia la aplicación
         self.root.mainloop()
 
 if __name__ == '__main__':

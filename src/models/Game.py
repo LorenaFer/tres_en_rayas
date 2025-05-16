@@ -13,11 +13,11 @@ class Game:
         self.lock = threading.Lock()  # Lock para sincronización
         
     def create_table(self):
-        # Crea una nueva sala si hay menos de 10 salas disponibles
+        # Crea una nueva sala si hay menos de 50 salas disponibles 
         with self.lock:
             try:
                 waiting_tables = [table for table in self.tables if len(table.players) < 2]
-                if len(waiting_tables) < 20:
+                if len(waiting_tables) < 50:
                     table = Table(self.table_id)
                     self.tables.append(table)
                     self.table_id += 1
@@ -56,18 +56,18 @@ class Game:
             return tables_info
 
     def get_table(self, table_id):
-        """Obtiene una sala específica por su ID."""
+        #Obtiene una sala específica por su ID
         with self.lock:
             return next((table for table in self.tables if table.id == table_id), None)
 
     def to_json(self):
-        """Convierte el estado del juego a formato JSON."""
+        #Convierte el estado del juego a formato JSON
         with self.lock:
             return json.dumps({
                 'tables': self.get_tables_info()
             })
 
     def remove_finished_tables(self):
-        """Elimina todas las salas que ya han finalizado."""
+        #Elimina todas las salas que ya han finalizado
         with self.lock:
             self.tables = [table for table in self.tables if table.winner is None]

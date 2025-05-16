@@ -20,19 +20,19 @@ class Table:
         self.thread = None  # Hilo de la sala
 
     def start_thread(self):
-        """Inicia el hilo de la sala."""
+        #Inicia el hilo de la sala
         self.running = True
         self.thread = threading.Thread(target=self.run)
         self.thread.start()
 
     def stop_thread(self):
-        """Detiene el hilo de la sala."""
+        #Detiene el hilo de la sala
         self.running = False
         if self.thread:
             self.thread.join()
 
     def run(self):
-        """Lógica que se ejecuta en el hilo de la sala."""
+        #Lógica que se ejecuta en el hilo de la sala
         while self.running:
             with self.lock:
                 if self.winner:
